@@ -26,29 +26,6 @@ export const SessionProvider = ({ children }: { children: React.ReactNode }) => 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getSessionAndProfile = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error) console.error("Error getting session:", error);
-      
-      setSession(session);
-      const currentUser = session?.user;
-      setUser(currentUser ?? null);
-
-      if (currentUser) {
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', currentUser.id)
-          .single();
-        
-        if (profileError) console.error("Error fetching profile:", profileError);
-        setProfile(profileData);
-      }
-      setLoading(false);
-    };
-
-    getSessionAndProfile();
-
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         setSession(session);
@@ -62,8 +39,12 @@ export const SessionProvider = ({ children }: { children: React.ReactNode }) => 
             .eq('id', currentUser.id)
             .single();
           
-          if (profileError) console.error("Error fetching profile:", profileError);
-          setProfile(profileData);
+          if (profileError) {
+            console.error("Error fetching profile:", profileError);
+            setProfile(null);
+          } else {
+            setProfile(profileData);
+          }
         } else {
           setProfile(null);
         }
