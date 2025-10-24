@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ThemeToggle } from "./ThemeToggle";
 
 export const Navbar = () => {
   const navigate = useNavigate();
@@ -47,6 +48,8 @@ export const Navbar = () => {
             </Link>
           </Button>
           
+          <ThemeToggle />
+
           {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

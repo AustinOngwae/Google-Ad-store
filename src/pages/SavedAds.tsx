@@ -1,11 +1,12 @@
 import { useSession } from "@/contexts/SessionContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { AdCard } from "@/components/AdCard";
 import { AdWithStatus } from "@/types";
 import { showSuccess, showError } from "@/utils/toast";
 import { Navbar } from "@/components/Navbar";
+import { Button } from "@/components/ui/button";
 
 const SavedAds = () => {
   const { session, loading, user } = useSession();
