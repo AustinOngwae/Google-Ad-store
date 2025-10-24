@@ -1,6 +1,9 @@
 import { useSession } from "@/contexts/SessionContext";
 import { Navigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
+import React, { Suspense } from "react";
+
+const GoogleAd = React.lazy(() => import("@/components/GoogleAd").then(module => ({ default: module.GoogleAd })));
 
 const Home = () => {
   const { session, loading } = useSession();
@@ -23,7 +26,12 @@ const Home = () => {
         </header>
         
         <main className="flex flex-col items-center gap-8">
-          {/* Ad content has been temporarily removed for performance testing. */}
+          <Suspense fallback={<div>Loading Ad...</div>}>
+            <GoogleAd slot="1234567890" adStyle={{ width: '300px', height: '250px' }} />
+          </Suspense>
+          <Suspense fallback={<div>Loading Ad...</div>}>
+            <GoogleAd slot="0987654321" adStyle={{ width: '300px', height: '250px' }} />
+          </Suspense>
         </main>
       </div>
     </>
