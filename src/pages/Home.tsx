@@ -22,7 +22,7 @@ const Home = () => {
     if (!user) return;
     setIsLoadingAds(true);
     try {
-      const { data: adsData, error: adsError } = await supabase.from("ads").select("*");
+      const { data: adsData, error: adsError } = await supabase.rpc('get_random_ads', { limit_count: 12 });
       if (adsError) throw adsError;
 
       const { data: statusesData, error: statusesError } = await supabase
