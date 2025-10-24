@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { Home, Bookmark, User, LogOut } from "lucide-react";
+import { Home, Bookmark, User, LogOut, Shield } from "lucide-react";
 import { useSession } from "@/contexts/SessionContext";
 import {
   DropdownMenu,
@@ -68,6 +68,14 @@ export const Navbar = () => {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                {profile?.role === 'admin' && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin">
+                      <Shield className="mr-2 h-4 w-4" />
+                      <span>Admin Panel</span>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem asChild>
                   <Link to="/profile">
                     <User className="mr-2 h-4 w-4" />

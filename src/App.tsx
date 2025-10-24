@@ -9,8 +9,10 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import SavedAds from "./pages/SavedAds";
 import Profile from "./pages/Profile";
+import Admin from "./pages/Admin";
 import { SessionProvider } from "./contexts/SessionContext";
 import { ThemeProvider } from "./components/ThemeProvider";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +30,11 @@ const App = () => (
               <Route path="/home" element={<Home />} />
               <Route path="/saved" element={<SavedAds />} />
               <Route path="/profile" element={<Profile />} />
+              
+              <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+                <Route path="/admin" element={<Admin />} />
+              </Route>
+
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
