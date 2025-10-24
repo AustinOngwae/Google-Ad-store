@@ -19,3 +19,10 @@ export type AdWithStatus = Ad & {
     is_saved?: boolean;
     is_blocked?: boolean;
 }
+
+export interface Profile {
+  id: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  updated_at: string | null;
+}
