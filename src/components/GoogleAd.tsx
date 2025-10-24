@@ -18,7 +18,9 @@ export const GoogleAd: React.FC<GoogleAdProps> = ({ slot, format = 'auto', respo
     // Check if the AdSense script is already loaded
     if (!document.querySelector('script[src^="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]')) {
       const script = document.createElement('script');
-      script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1234567890123456'; // Replace with your actual client ID
+      // IMPORTANT: Replace 'ca-pub-1234567890123456' with your actual Google AdSense client ID.
+      // Ads will not display until this is correctly configured and your AdSense account is approved.
+      script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1234567890123456'; 
       script.async = true;
       script.crossOrigin = 'anonymous';
       document.head.appendChild(script);
@@ -38,7 +40,8 @@ export const GoogleAd: React.FC<GoogleAdProps> = ({ slot, format = 'auto', respo
     <ins
       className="adsbygoogle"
       style={{ display: 'block', ...adStyle }}
-      data-ad-client="ca-pub-1234567890123456" // Replace with your actual client ID
+      // IMPORTANT: Replace 'ca-pub-1234567890123456' with your actual Google AdSense client ID.
+      data-ad-client="ca-pub-1234567890123456" 
       data-ad-slot={slot}
       data-ad-format={format}
       data-full-width-responsive={responsive}
