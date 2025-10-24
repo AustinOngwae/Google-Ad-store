@@ -7,7 +7,7 @@ import { AdWithStatus } from "@/types";
 import { showSuccess, showError } from "@/utils/toast";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
+// Removed: import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 const SavedAds = () => {
   const { session, loading, user } = useSession();
@@ -87,8 +87,9 @@ const SavedAds = () => {
     }
   };
 
+  // The global LoadingScreen handles the initial loading state
   if (loading) {
-    return <LoadingSpinner />;
+    return null; // Or a minimal placeholder if needed, but LoadingScreen covers it
   }
 
   if (!session) {

@@ -1,6 +1,6 @@
 import { useSession } from "@/contexts/SessionContext";
 import { Navigate, Outlet } from "react-router-dom";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
+// Removed: import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 interface ProtectedRouteProps {
   allowedRoles: string[];
@@ -9,8 +9,9 @@ interface ProtectedRouteProps {
 const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
   const { profile, loading } = useSession();
 
+  // The global LoadingScreen handles the initial loading state
   if (loading) {
-    return <LoadingSpinner />;
+    return null; // Or a minimal placeholder if needed, but LoadingScreen covers it
   }
 
   if (!profile || !allowedRoles.includes(profile.role ?? '')) {

@@ -8,6 +8,8 @@ interface SessionContextValue {
   user: User | null;
   profile: Profile | null;
   loading: boolean;
+  loadingProgress: number;
+  loadingMessage: string;
 }
 
 const SessionContext = createContext<SessionContextValue>({
@@ -15,6 +17,8 @@ const SessionContext = createContext<SessionContextValue>({
   user: null,
   profile: null,
   loading: true,
+  loadingProgress: 0,
+  loadingMessage: "Initializing...",
 });
 
 export const useSession = () => useContext(SessionContext);
@@ -24,16 +28,22 @@ export const SessionProvider = ({ children }: { children: React.ReactNode }) => 
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [loadingMessage, setLoadingMessage] = useState("Starting application...");
 
   useEffect(() => {
     const fetchInitialSession = async () => {
       try {
+        setLoadingProgress(25);
+        setLoadingMessage("Checking user session...");
         const { data: { session } } = await supabase.auth.getSession();
         setSession(session);
         const currentUser = session?.user;
         setUser(currentUser ?? null);
 
         if (currentUser) {
+          setLoadingProgress(50);
+          setLoadingMessage("Fetching user profile...");
           const { data: profileData, error: profileError } = await supabase
             .from('profiles')
             .select('*')
@@ -43,15 +53,23 @@ export const SessionProvider = ({ children }: { children: React.ReactNode }) => 
           if (profileError) {
             console.error("Error fetching profile:", profileError);
             setProfile(null);
+            setLoadingMessage("Error loading profile. Please try again.");
           } else {
             setProfile(profileData);
+            setLoadingProgress(75);
+            setLoadingMessage("Profile loaded. Preparing application...");
           }
         } else {
           setProfile(null);
+          setLoadingProgress(75);
+          setLoadingMessage("No active session. Redirecting to login...");
         }
       } catch (error) {
         console.error("Error fetching initial session:", error);
+        setLoadingMessage("An error occurred during startup.");
       } finally {
+        setLoadingProgress(100);
+        setLoadingMessage("Application ready!");
         setLoading(false);
       }
     };
@@ -89,7 +107,7 @@ export const SessionProvider = ({ children }: { children: React.ReactNode }) => 
   }, []);
 
   return (
-    <SessionContext.Provider value={{ session, user, profile, loading }}>
+    <SessionContext.Provider value={{ session, user, profile, loading, loadingProgress, loadingMessage }}>
       {children}
     </SessionContext.Provider>
   );

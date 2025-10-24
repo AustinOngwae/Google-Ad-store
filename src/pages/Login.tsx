@@ -3,13 +3,14 @@ import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { Navigate } from "react-router-dom";
 import { useSession } from "@/contexts/SessionContext";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
+// Removed: import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 const Login = () => {
   const { session, loading } = useSession();
 
+  // The global LoadingScreen handles the initial loading state
   if (loading) {
-    return <LoadingSpinner />;
+    return null; // Or a minimal placeholder if needed, but LoadingScreen covers it
   }
 
   if (session) {

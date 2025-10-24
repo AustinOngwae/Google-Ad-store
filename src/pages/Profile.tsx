@@ -12,7 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { showError, showSuccess } from '@/utils/toast';
 import { useState, useEffect } from 'react';
 import { AvatarUpload } from '@/components/AvatarUpload';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+// Removed: import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 const profileFormSchema = z.object({
   full_name: z.string().min(2, { message: 'Full name must be at least 2 characters.' }).max(50, { message: 'Full name must be 50 characters or less.' }),
@@ -68,8 +68,9 @@ const Profile = () => {
     }
   };
 
+  // The global LoadingScreen handles the initial loading state
   if (loading) {
-    return <LoadingSpinner />;
+    return null; // Or a minimal placeholder if needed, but LoadingScreen covers it
   }
 
   if (!session) {
