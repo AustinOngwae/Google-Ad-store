@@ -41,7 +41,7 @@ export const SessionProvider = ({ children }: { children: React.ReactNode }) => 
         // Wrap getSession with a timeout
         const { data: { session: initialSession } } = await promiseWithTimeout(
           supabase.auth.getSession(),
-          7000, // 7-second timeout
+          4000, // Changed to 4-second timeout
           new Error("Session check timed out. Please try logging in again.")
         );
         
