@@ -16,15 +16,12 @@ declare global {
 
 export const GoogleAd: React.FC<GoogleAdProps> = ({ slot, format = 'auto', responsive = 'true', adStyle }) => {
   const [isLoading, setIsLoading] = useState(true);
-  const adContainerRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const loadAdScript = () => {
       if (!document.querySelector('script[src^="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]')) {
         const script = document.createElement('script');
-        // IMPORTANT: Replace 'ca-pub-1234567890123456' with your actual Google AdSense client ID.
-        // Ads will not display until this is correctly configured and your AdSense account is approved.
-        script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1234567890123456';
+        script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3657670648504430';
         script.async = true;
         script.crossOrigin = 'anonymous';
         document.head.appendChild(script);
@@ -54,12 +51,12 @@ export const GoogleAd: React.FC<GoogleAdProps> = ({ slot, format = 'auto', respo
   const { width = '300px', height = '250px' } = adStyle || {};
 
   return (
-    <div ref={adContainerRef} style={{ width, height, position: 'relative' }}>
+    <div style={{ width, height, position: 'relative' }}>
       {isLoading && <AdSkeleton width={width as string} height={height as string} />}
       <ins
         className="adsbygoogle"
         style={{ display: isLoading ? 'none' : 'block', width, height, ...adStyle }} // Hide ad while loading
-        data-ad-client="ca-pub-1234567890123456"
+        data-ad-client="ca-pub-3657670648504430"
         data-ad-slot={slot}
         data-ad-format={format}
         data-full-width-responsive={responsive}

@@ -27,10 +27,10 @@ const Home = () => {
         
         <main className="flex flex-col items-center gap-8">
           <Suspense fallback={<div>Loading Ad...</div>}>
-            <GoogleAd slot="1234567890" adStyle={{ width: '300px', height: '250px' }} />
+            <GoogleAd slot="2276326504" adStyle={{ width: '300px', height: '250px' }} />
           </Suspense>
           <Suspense fallback={<div>Loading Ad...</div>}>
-            <GoogleAd slot="0987654321" adStyle={{ width: '300px', height: '250px' }} />
+            <GoogleAd slot="4720965940" adStyle={{ width: '300px', height: '250px' }} />
           </Suspense>
         </main>
       </div>
