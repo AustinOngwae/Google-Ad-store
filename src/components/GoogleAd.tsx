@@ -16,36 +16,54 @@ declare global {
 
 export const GoogleAd: React.FC<GoogleAdProps> = ({ slot, format = 'auto', responsive = 'true', adStyle }) => {
   const [isLoading, setIsLoading] = useState(true);
+  const adClient = "ca-pub-3657670648504430"; // Your AdSense client ID
 
   useEffect(() => {
-    const loadAdScript = () => {
-      if (!document.querySelector('script[src^="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]')) {
+    // Function to load the AdSense script
+    const loadAdSenseScript = () => {
+      const existingScript = document.querySelector(`script[src^="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adClient}"]`);
+      
+      if (!existingScript) {
         const script = document.createElement('script');
-        script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3657670648504430';
+        script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adClient}`;
         script.async = true;
         script.crossOrigin = 'anonymous';
         document.head.appendChild(script);
+        
+        script.onload = () => {
+          // Script loaded, now push the ad
+          if (window.adsbygoogle && window.adsbygoogle.push) {
+            window.adsbygoogle.push({});
+            setIsLoading(false); // Hide skeleton once ad is pushed
+          }
+        };
+        script.onerror = (e) => {
+          console.error("Error loading AdSense script:", e);
+          setIsLoading(false); // Hide skeleton even if script fails
+        };
+      } else {
+        // Script already exists, just push the ad
+        if (window.adsbygoogle && window.adsbygoogle.push) {
+          window.adsbygoogle.push({});
+          setIsLoading(false); // Hide skeleton once ad is pushed
+        }
       }
     };
 
-    loadAdScript();
+    loadAdSenseScript();
 
-    // Push the ad to the adsbygoogle array and then hide the skeleton
-    const timer = setTimeout(() => {
-      try {
-        if (window.adsbygoogle && window.adsbygoogle.push) {
-          window.adsbygoogle.push({});
-        }
-      } catch (e) {
-        console.error("Error pushing ad to adsbygoogle:", e);
-      } finally {
-        // Hide skeleton after a delay, assuming ad has loaded or failed
+    // Fallback to hide skeleton if ad doesn't load after a longer period
+    const fallbackTimer = setTimeout(() => {
+      if (isLoading) { // Only hide if still loading
         setIsLoading(false);
+        console.warn("Ad loading timed out, hiding skeleton. Check AdSense configuration or ad blockers.");
       }
-    }, 2000); // Show skeleton for 2 seconds
+    }, 5000); // 5 seconds fallback
 
-    return () => clearTimeout(timer);
-  }, [slot]);
+    return () => {
+      clearTimeout(fallbackTimer);
+    };
+  }, [slot]); // Re-run if slot changes
 
   // Extract width and height from adStyle, providing defaults
   const { width = '300px', height = '250px' } = adStyle || {};
@@ -56,7 +74,7 @@ export const GoogleAd: React.FC<GoogleAdProps> = ({ slot, format = 'auto', respo
       <ins
         className="adsbygoogle"
         style={{ display: isLoading ? 'none' : 'block', width, height, ...adStyle }} // Hide ad while loading
-        data-ad-client="ca-pub-3657670648504430"
+        data-ad-client={adClient}
         data-ad-slot={slot}
         data-ad-format={format}
         data-full-width-responsive={responsive}
