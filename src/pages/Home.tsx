@@ -24,16 +24,21 @@ const Home = () => {
         </header>
         
         <main className="flex flex-col items-center gap-8">
-          {/* 
-            This is a placeholder for a Google Ad. 
-            You need to replace 'ca-pub-YOUR_CLIENT_ID' and 'YOUR_SLOT_ID'
-            with your actual IDs from your Google AdSense account.
-          */}
-          <div className="w-full max-w-4xl h-64 bg-gray-200 dark:bg-gray-800 rounded-lg flex items-center justify-center">
-             <GoogleAd client="ca-pub-YOUR_CLIENT_ID" slot="YOUR_SLOT_ID" style={{ display: 'block', width: '100%', height: '100%' }} />
+          {/* Ad Slot 1: Adstoresquare */}
+          <div className="w-full max-w-4xl min-h-[250px] flex items-center justify-center">
+             <GoogleAd 
+               client="ca-pub-3657670648504430" 
+               slot="2276326504" 
+               style={{ display: 'block', width: '100%', height: '100%' }} 
+             />
           </div>
-           <div className="w-full max-w-4xl h-64 bg-gray-200 dark:bg-gray-800 rounded-lg flex items-center justify-center">
-             <GoogleAd client="ca-pub-YOUR_CLIENT_ID" slot="YOUR_SLOT_ID" style={{ display: 'block', width: '100%', height: '100%' }} />
+          {/* Ad Slot 2: Adstorevertical */}
+           <div className="w-full max-w-4xl min-h-[250px] flex items-center justify-center">
+             <GoogleAd 
+               client="ca-pub-3657670648504430" 
+               slot="4720965940" 
+               style={{ display: 'block', width: '100%', height: '100%' }} 
+             />
           </div>
         </main>
       </div>
