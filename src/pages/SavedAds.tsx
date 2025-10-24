@@ -7,41 +7,46 @@ import { AdWithStatus } from "@/types";
 import { showSuccess, showError } from "@/utils/toast";
 import { Navbar } from "@/components/Navbar";
 
-const Home = () => {
+const SavedAds = () => {
   const { session, loading, user } = useSession();
-  const [ads, setAds] = useState<AdWithStatus[]>([]);
+  const [savedAds, setSavedAds] = useState<AdWithStatus[]>([]);
   const [isLoadingAds, setIsLoadingAds] = useState(true);
 
   useEffect(() => {
     if (user) {
-      fetchAds();
+      fetchSavedAds();
     }
   }, [user]);
 
-  const fetchAds = async () => {
+  const fetchSavedAds = async () => {
     if (!user) return;
     setIsLoadingAds(true);
     try {
-      const { data: adsData, error: adsError } = await supabase.from("ads").select("*");
-      if (adsError) throw adsError;
+      const { data, error } = await supabase
+        .from('user_ad_status')
+        .select(`
+          is_saved,
+          is_blocked,
+          ads (*)
+        `)
+        .eq('user_id', user.id)
+        .eq('is_saved', true)
+        .neq('is_blocked', true);
 
-      const { data: statusesData, error: statusesError } = await supabase
-        .from("user_ad_status")
-        .select("*")
-        .eq("user_id", user.id);
-      if (statusesError) throw statusesError;
+      if (error) throw error;
 
-      const statusesMap = new Map(statusesData.map(s => [s.ad_id, s]));
-      const mergedAds: AdWithStatus[] = adsData.map(ad => ({
-        ...ad,
-        is_saved: statusesMap.get(ad.id)?.is_saved || false,
-        is_blocked: statusesMap.get(ad.id)?.is_blocked || false,
-      }));
+      const formattedAds: AdWithStatus[] = data
+        .map(item => ({
+          ...item.ads,
+          is_saved: item.is_saved,
+          is_blocked: item.is_blocked,
+        }))
+        .filter(ad => ad.id);
 
-      setAds(mergedAds);
+      setSavedAds(formattedAds);
     } catch (error) {
-      console.error("Error fetching ads:", error);
-      showError("Failed to load ads.");
+      console.error("Error fetching saved ads:", error);
+      showError("Failed to load saved ads.");
     } finally {
       setIsLoadingAds(false);
     }
@@ -49,47 +54,32 @@ const Home = () => {
 
   const handleSave = async (adId: string, newSaveState: boolean) => {
     if (!user) return;
-    setAds(currentAds =>
-      currentAds.map(ad =>
-        ad.id === adId ? { ...ad, is_saved: newSaveState } : ad
-      )
-    );
+    
+    setSavedAds(currentAds => currentAds.filter(ad => ad.id !== adId));
 
     const { error } = await supabase
       .from("user_ad_status")
       .upsert({ user_id: user.id, ad_id: adId, is_saved: newSaveState }, { onConflict: 'user_id,ad_id' });
 
     if (error) {
-      showError("Failed to save ad.");
-      setAds(currentAds =>
-        currentAds.map(ad =>
-          ad.id === adId ? { ...ad, is_saved: !newSaveState } : ad
-        )
-      );
+      showError("Failed to unsave ad.");
+      fetchSavedAds();
     } else {
-      showSuccess(newSaveState ? "Ad saved!" : "Ad unsaved.");
+      showSuccess("Ad unsaved.");
     }
   };
 
   const handleBlock = async (adId: string) => {
     if (!user) return;
-    setAds(currentAds =>
-      currentAds.map(ad =>
-        ad.id === adId ? { ...ad, is_blocked: true } : ad
-      )
-    );
+    setSavedAds(currentAds => currentAds.filter(ad => ad.id !== adId));
 
     const { error } = await supabase
       .from("user_ad_status")
-      .upsert({ user_id: user.id, ad_id: adId, is_blocked: true }, { onConflict: 'user_id,ad_id' });
+      .upsert({ user_id: user.id, ad_id: adId, is_blocked: true, is_saved: false }, { onConflict: 'user_id,ad_id' });
 
     if (error) {
       showError("Failed to block ad.");
-      setAds(currentAds =>
-        currentAds.map(ad =>
-          ad.id === adId ? { ...ad, is_blocked: false } : ad
-        )
-      );
+      fetchSavedAds();
     } else {
       showSuccess("Ad blocked.");
     }
@@ -103,28 +93,29 @@ const Home = () => {
     return <Navigate to="/login" replace />;
   }
 
-  const visibleAds = ads.filter(ad => !ad.is_blocked);
-
   return (
     <>
       <Navbar />
       <div className="container mx-auto p-4 md:p-8">
         <header className="my-8">
-          <h1 className="text-3xl font-bold">Recommended Ads</h1>
+          <h1 className="text-3xl font-bold">Your Saved Ads</h1>
         </header>
         
         <main>
           {isLoadingAds ? (
-            <p>Loading ads...</p>
+            <p>Loading saved ads...</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {visibleAds.length > 0 ? (
-                visibleAds.map(ad => (
+              {savedAds.length > 0 ? (
+                savedAds.map(ad => (
                   <AdCard key={ad.id} ad={ad} onSave={handleSave} onBlock={handleBlock} />
                 ))
               ) : (
                 <div className="col-span-full text-center text-muted-foreground py-16">
-                  <p>No more ads to show right now.</p>
+                  <p>You haven't saved any ads yet.</p>
+                  <Button variant="link" asChild>
+                    <Link to="/home">Explore Ads</Link>
+                  </Button>
                 </div>
               )}
             </div>
@@ -135,4 +126,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default SavedAds;
