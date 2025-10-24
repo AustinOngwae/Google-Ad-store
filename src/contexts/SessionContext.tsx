@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { Profile } from "@/types";
+import { promiseWithTimeout } from "@/utils/promiseWithTimeout"; // Import the new utility
 
 interface SessionContextValue {
   session: Session | null;
@@ -36,9 +37,16 @@ export const SessionProvider = ({ children }: { children: React.ReactNode }) => 
       try {
         setLoadingProgress(25);
         setLoadingMessage("Checking user session...");
-        const { data: { session } } = await supabase.auth.getSession();
-        setSession(session);
-        const currentUser = session?.user;
+
+        // Wrap getSession with a timeout
+        const { data: { session: initialSession } } = await promiseWithTimeout(
+          supabase.auth.getSession(),
+          7000, // 7-second timeout
+          new Error("Session check timed out. Please try logging in again.")
+        );
+        
+        setSession(initialSession);
+        const currentUser = initialSession?.user;
         setUser(currentUser ?? null);
 
         if (currentUser) {
@@ -53,7 +61,10 @@ export const SessionProvider = ({ children }: { children: React.ReactNode }) => 
           if (profileError) {
             console.error("Error fetching profile:", profileError);
             setProfile(null);
-            setLoadingMessage("Error loading profile. Please try again.");
+            setLoadingMessage("Error loading profile. Redirecting to login.");
+            // If profile fails, treat as unauthenticated for this session
+            setSession(null);
+            setUser(null);
           } else {
             setProfile(profileData);
             setLoadingProgress(75);
@@ -64,9 +75,13 @@ export const SessionProvider = ({ children }: { children: React.ReactNode }) => 
           setLoadingProgress(75);
           setLoadingMessage("No active session. Redirecting to login...");
         }
-      } catch (error) {
-        console.error("Error fetching initial session:", error);
-        setLoadingMessage("An error occurred during startup.");
+      } catch (error: any) {
+        console.error("Error during initial session fetch:", error.message);
+        setLoadingMessage(error.message || "An error occurred during startup. Redirecting to login.");
+        // Clear session and user if any error occurs during initial fetch
+        setSession(null);
+        setUser(null);
+        setProfile(null);
       } finally {
         setLoadingProgress(100);
         setLoadingMessage("Application ready!");
