@@ -1,11 +1,12 @@
 import { useSession } from "@/contexts/SessionContext";
 import { Navigate } from "react-router-dom";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 const Index = () => {
   const { session, loading } = useSession();
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingSpinner />;
   }
 
   if (session) {

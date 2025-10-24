@@ -12,6 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { showError, showSuccess } from '@/utils/toast';
 import { useState, useEffect } from 'react';
 import { AvatarUpload } from '@/components/AvatarUpload';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 const profileFormSchema = z.object({
   full_name: z.string().min(2, { message: 'Full name must be at least 2 characters.' }).max(50, { message: 'Full name must be 50 characters or less.' }),
@@ -68,7 +69,7 @@ const Profile = () => {
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    return <LoadingSpinner />;
   }
 
   if (!session) {

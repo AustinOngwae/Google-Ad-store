@@ -3,12 +3,13 @@ import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { Navigate } from "react-router-dom";
 import { useSession } from "@/contexts/SessionContext";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 const Login = () => {
   const { session, loading } = useSession();
 
   if (loading) {
-    return null; // Or a loading spinner
+    return <LoadingSpinner />;
   }
 
   if (session) {

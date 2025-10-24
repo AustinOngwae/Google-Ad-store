@@ -7,6 +7,7 @@ import { AdWithStatus } from "@/types";
 import { showSuccess, showError } from "@/utils/toast";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 const SavedAds = () => {
   const { session, loading, user } = useSession();
@@ -87,7 +88,7 @@ const SavedAds = () => {
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    return <LoadingSpinner />;
   }
 
   if (!session) {
